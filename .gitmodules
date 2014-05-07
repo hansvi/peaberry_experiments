@@ -1,0 +1,3 @@
+[submodule "fftbench"]
+	path = fftbench
+	url = https://github.com/hansvi/fftbench.git
