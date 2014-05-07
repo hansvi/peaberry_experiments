@@ -14,8 +14,10 @@ TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp\
-        widget.cpp
+        widget.cpp \
+    mainwindow.cpp
 
-HEADERS  += widget.h
+HEADERS  += widget.h \
+    mainwindow.h
 
 unix:!macx:!symbian: LIBS += -lasound

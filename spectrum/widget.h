@@ -10,6 +10,7 @@ class FFTWidget : public QWidget
 {
     Q_OBJECT
     std::complex<float> buffer[1024];
+    float window_function[1024];
     snd_pcm_t *capture_handle;
     QTimer *timer;
 
@@ -18,6 +19,8 @@ public:
     ~FFTWidget();
 public slots:
     void processFFT();
+    void setHannWindow();
+    void setRectWindow();
 protected:
     void paintEvent(QPaintEvent *event);
 };

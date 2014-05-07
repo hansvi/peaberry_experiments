@@ -2,6 +2,7 @@
 #include <qpainter.h>
 #include <qpainterpath.h>
 #include <../fftbench/fft.hpp>
+#include <math.h>
 
 FFTWidget::FFTWidget(QWidget *parent)
     : QWidget(parent)
@@ -75,6 +76,8 @@ FFTWidget::FFTWidget(QWidget *parent)
         exit (1);
     }
 
+    setRectWindow();
+
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(processFFT()));
     timer->start(); // Zero-delay
@@ -112,7 +115,7 @@ void FFTWidget::processFFT()
         }
         for(int i=0; i<1024; i++)
         {
-            buffer[i]= std::complex<float>(input[2*i+1]/32768.0, input[2*i]/32768.0);
+            buffer[i]= window_function[i] * std::complex<float>(input[2*i+1], input[2*i]);
         }
         FFT::dft(buffer);
         update();
@@ -121,6 +124,7 @@ void FFTWidget::processFFT()
 
 void FFTWidget::paintEvent(QPaintEvent *event)
 {
+    event = event;
     QPainter painter(this);
     painter.setPen(Qt::black);
     QPainterPath path(QPointF(0, 99.0-100*std::abs(buffer[0])));
@@ -128,7 +132,23 @@ void FFTWidget::paintEvent(QPaintEvent *event)
     painter.scale(width()/1024.0, height()/100.0);
     for(int i=1; i<1024;i++)
     {
-        path.lineTo(QPointF(i, 100.0-1000*std::abs(buffer[i])));
+        path.lineTo(QPointF(i, 100.0-500*std::abs(buffer[i])));
     }
     painter.drawPath(path);
+}
+
+void FFTWidget::setRectWindow()
+{
+    for(int i=0; i<1024;i++)
+    {
+        window_function[i]=1.0/32768.0;
+    }
+}
+
+void FFTWidget::setHannWindow()
+{
+    for(int i=0; i<1024; i++)
+    {
+        window_function[i] = 0.5*(1-cos((2.0*M_PI*i)/(1024-1)))/32768.0;
+    }
 }
