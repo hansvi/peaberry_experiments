@@ -1,6 +1,7 @@
 #include "widget.h"
 #include <qpainter.h>
 #include <qpainterpath.h>
+#include <../fftbench/fft.hpp>
 
 FFTWidget::FFTWidget(QWidget *parent)
     : QWidget(parent)
@@ -113,6 +114,7 @@ void FFTWidget::processFFT()
         {
             buffer[i]= std::complex<float>(input[2*i+1]/32768.0, input[2*i]/32768.0);
         }
+        FFT::dft(buffer);
         update();
     }
 }
@@ -126,7 +128,7 @@ void FFTWidget::paintEvent(QPaintEvent *event)
     painter.scale(width()/1024.0, height()/100.0);
     for(int i=1; i<1024;i++)
     {
-        path.lineTo(QPointF(i, 99.0-100000*std::abs(buffer[i])));
+        path.lineTo(QPointF(i, 100.0-1000*std::abs(buffer[i])));
     }
     painter.drawPath(path);
 }
