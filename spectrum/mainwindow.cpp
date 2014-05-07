@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     window_chooser = new QComboBox;
     window_chooser->addItem("Rectangular");
     window_chooser->addItem("Hann");
+    window_chooser->addItem("Blackman-Harris");
     QVBoxLayout *top = new QVBoxLayout;
     QHBoxLayout *buttons = new QHBoxLayout;
     buttons->addWidget(window_chooser);
@@ -26,6 +27,8 @@ void MainWindow::changeWindow(int idx)
 {
     if(idx==1)
         fftwidget->setHannWindow();
+    else if(idx==2)
+        fftwidget->setBlackmanHarrissWindow();
     else
         fftwidget->setRectWindow();
 }

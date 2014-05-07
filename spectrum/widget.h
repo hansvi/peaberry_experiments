@@ -21,6 +21,7 @@ public slots:
     void processFFT();
     void setHannWindow();
     void setRectWindow();
+    void setBlackmanHarrissWindow();
 protected:
     void paintEvent(QPaintEvent *event);
 };

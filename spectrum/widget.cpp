@@ -127,12 +127,12 @@ void FFTWidget::paintEvent(QPaintEvent *event)
     event = event;
     QPainter painter(this);
     painter.setPen(Qt::black);
-    QPainterPath path(QPointF(0, 99.0-100*std::abs(buffer[0])));
+    QPainterPath path(QPointF(0, 99.0-100*std::abs(buffer[512])));
     // Make the viewport size 512x100
     painter.scale(width()/1024.0, height()/100.0);
     for(int i=1; i<1024;i++)
     {
-        path.lineTo(QPointF(i, 100.0-500*std::abs(buffer[i])));
+        path.lineTo(QPointF(i, 100.0-500*std::abs(buffer[(i+512)%1024])));
     }
     painter.drawPath(path);
 }
@@ -150,5 +150,17 @@ void FFTWidget::setHannWindow()
     for(int i=0; i<1024; i++)
     {
         window_function[i] = 0.5*(1-cos((2.0*M_PI*i)/(1024-1)))/32768.0;
+    }
+}
+
+void FFTWidget::setBlackmanHarrissWindow()
+{
+    const float a0 = 0.35875;
+    const float a1 = 0.48829;
+    const float a2 = 0.14128;
+    const float a3 = 0.01168;
+    for(int i=0; i<1024; i++)
+    {
+        window_function[i] = (a0 - a1*cos((2.0*M_PI*i)/(1024-1)) +a2*cos((4.0*M_PI*i)/(1024-1)) -a3*cos((6.0*M_PI*i)/(1024-1)))/32768.0;
     }
 }
