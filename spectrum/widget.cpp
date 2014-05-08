@@ -141,16 +141,18 @@ void FFTWidget::setRectWindow()
 {
     for(int i=0; i<1024;i++)
     {
-        window_function[i]=1.0/32768.0;
+        window_function[i]=f_offset(i, 1.0/32768.0);
     }
+    current_window = FFTWidget::RectangularWindow;
 }
 
 void FFTWidget::setHannWindow()
 {
     for(int i=0; i<1024; i++)
     {
-        window_function[i] = 0.5*(1-cos((2.0*M_PI*i)/(1024-1)))/32768.0;
+        window_function[i] = f_offset(i, 0.5*(1-cos((2.0*M_PI*i)/(1024-1)))/32768.0);
     }
+    current_window = FFTWidget::HannWindow;
 }
 
 void FFTWidget::setBlackmanHarrissWindow()
@@ -161,6 +163,38 @@ void FFTWidget::setBlackmanHarrissWindow()
     const float a3 = 0.01168;
     for(int i=0; i<1024; i++)
     {
-        window_function[i] = (a0 - a1*cos((2.0*M_PI*i)/(1024-1)) +a2*cos((4.0*M_PI*i)/(1024-1)) -a3*cos((6.0*M_PI*i)/(1024-1)))/32768.0;
+        window_function[i] = f_offset(i, (a0 - a1*cos((2.0*M_PI*i)/(1024-1)) +a2*cos((4.0*M_PI*i)/(1024-1)) -a3*cos((6.0*M_PI*i)/(1024-1)))/32768.0);
     }
+    current_window = FFTWidget::BlackmanHarrissWindow;
+}
+
+std::complex<float> FFTWidget::f_offset(int i, float rho)
+{
+    return std::polar<float>(rho, 2.0*M_PI*offset_freq*i/1024.0);
+}
+
+
+void FFTWidget::updateWindowFunction()
+{
+    switch(current_window)
+    {
+    case FFTWidget::RectangularWindow:
+        setRectWindow();
+        break;
+    case FFTWidget::HannWindow:
+        setHannWindow();
+        break;
+    case FFTWidget::BlackmanHarrissWindow:
+        setBlackmanHarrissWindow();
+        break;
+    default:
+        fprintf(stderr, "FFT window function index corrupted\n");
+        exit(1);
+    }
+}
+
+void FFTWidget::setOffsetFrequency(float f)
+{
+    offset_freq = f;
+    updateWindowFunction();
 }
